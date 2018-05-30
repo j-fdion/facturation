@@ -1,0 +1,157 @@
+@using AppFactu.Models;
+@model Session
+
+@{
+    int pages = (int)Math.Ceiling(@Model.PersonneSessions.Count / 11.0);
+}
+
+@for (int page = 0; page < pages; page++)
+{
+    <table width="100%" class="liste-presence-info">
+        <tbody>
+            <tr>
+                <td colspan="8" class="title">LISTE DE PRÉSENCE</td>
+            </tr>
+            <tr>
+                <td>Cours:</td>
+                <td>@Model.Formation.Titre</td>
+            </tr>
+            <tr>
+                <td>Référence:</td>
+                <td>3R2106</td>
+            </tr>
+            <tr>
+                <td>Date:</td>
+                <td>@Model.Date</td>
+                <td class="empty"> </td>
+                <td>Entreprise:</td>
+                <td class="company">Consortium Masnesco Thibeault</td>
+                <td>Formateur:</td>
+                <td>@Model.Formateur.Prenom @Model.Formateur.Nom</td>
+                <td class="transport">Transport:</td>
+            </tr>
+            <tr>
+                <td>Horaire:</td>
+                <td>13h-14h</td>
+                <td class="empty"> </td>
+                <td>Responsable:</td>
+                <td>Sandra Lemieux</td>
+                <td>Lieu:</td>
+                <td>GCF</td>
+                <td class="transport">0 hrs</td>
+            </tr>
+            <tr>
+                <td>Formation sur demande:</td>
+                <td>&#9745;</td>
+                <td class="empty"></td>
+                <td>Tél./cell.:</td>
+                <td>418-543-5327/418-481-1354</td>
+                <td>Salle:</td>
+                <td>Salle 1</td>
+                <td class="transport">0 km</td>
+            </tr>
+            <tr>
+                <td colspan="2"></td>
+                <td class="empty"></td>
+                <td>No. de commande:</td>
+                <td colspan="4"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="separator"></div>
+
+    <table width="100%" class="liste-presence-participant">
+        <thead class="heading">
+            <tr>
+                <th>
+                    Nom
+                </th>
+                <th>
+
+                </th>
+                <th>
+                    Date de naissance
+                </th>
+                <th>
+
+                </th>
+                <th>
+                    Signature
+                </th>
+                <th>
+
+                </th>
+                <th>
+                    Résultat
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    (En lettres moulées)
+                </th>
+                <th>
+
+                </th>
+                <th>
+                    (JJ/MM/AAAA)
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = page * 11; i < (page + 1) * 11; i++)
+            {
+                <tr class="item">
+                    <td>
+                        @if (i < @Model.PersonneSessions.Count)
+                        {
+                            @Model.PersonneSessions.ElementAt(i).Personne.Prenom
+                        }
+
+                        @if (i < @Model.PersonneSessions.Count)
+                        {
+                            @Model.PersonneSessions.ElementAt(i).Personne.Nom;
+                        }
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="separator"></div>
+
+    <table width="100%" class="liste-presence-footer">
+        <tr>
+            <td>À retourner au responsable de la formation.</td>
+            <td colspan="2" class="left">RENSEIGNEMENTS PERSONNELS ET CONFIDENTIELS</td>
+        </tr>
+        <tr>
+            <td>Merci!</td>
+            <td class="left">Signature du formateur: ________________________________________________</td>
+            <td class="left ">Date: ________________________________</td>
+        </tr>
+    </table>
+
+    @if (page < pages - 1)
+    {
+        <div style="page-break-before: always;"></div>
+    }
+}

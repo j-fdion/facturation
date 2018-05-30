@@ -1,0 +1,570 @@
+@model Facture
+@using AppFactu.Models;
+@using System.Text;
+@using System.Globalization;
+
+
+<head>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paper-css/0.3.0/paper.css">
+
+    <style>
+        @@page {
+            size: letter
+        }
+    </style>
+
+    <style type="text/css">
+
+        .logo {
+            float: left;
+            width: 280px;
+            height: 128px;
+            background-image: url('/images/logo-gcf.png');
+            background-size: cover;
+            -webkit-print-color-adjust: exact !important;
+            z-index: 1;
+        }
+
+        .separator {
+            padding: 5px 0 5px 0;
+        }
+
+        .navigation {
+            font-size: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: inline-block;
+            vertical-align: middle;
+            float: right;
+            padding-right: 50px;
+            z-index: 1;
+        }
+
+        .facture-description ul {
+            display: flex;
+            align-items: center;
+        }
+
+        .facture-title {
+            font-size: 24px;
+            width: 100%;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 18%;
+            padding-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .facture-header {
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+            .facture-header table {
+                width: 100%;
+                border-collapse: collapse;
+                padding-bottom: 50px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .facture-header td {
+                border-top: thin solid;
+                border-bottom: thin solid;
+            }
+
+                .facture-header td:first-child {
+                    border-left: thin solid;
+                }
+
+                .facture-header td:last-child {
+                    border-right: thin solid;
+                }
+
+                .facture-header td.bold {
+                    padding-left: 5px;
+                    padding-right: 5px;
+                    font-weight: bold;
+                }
+
+        .facture-honoraire {
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+            .facture-honoraire table {
+                width: 100%;
+                padding-bottom: 50px;
+            }
+
+            .facture-honoraire thead {
+                padding-bottom: 50px;
+            }
+
+            .facture-honoraire td.date {
+                font-weight: bold;
+                font-style: italic;
+            }
+
+            .facture-honoraire th:first-child {
+                text-align: left;
+            }
+
+            .facture-honoraire td.number {
+                width: 20%;
+                text-align: right;
+            }
+
+            .facture-honoraire th.number {
+                width: 20%;
+                text-align: right;
+            }
+
+            .facture-honoraire td.nom {
+                font-size: 12px;
+                padding-left: 25px;
+                font-style: italic;
+            }
+
+        .facture-autres-frais {
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+            .facture-autres-frais table {
+                width: 100%;
+                padding-bottom: 50px;
+            }
+
+            .facture-autres-frais thead {
+                padding-bottom: 50px;
+            }
+
+            .facture-autres-frais td.date {
+                font-weight: bold;
+                font-style: italic;
+            }
+
+            .facture-autres-frais th:first-child {
+                text-align: left;
+            }
+
+            .facture-autres-frais td.number {
+                width: 20%;
+                text-align: right;
+            }
+
+            .facture-autres-frais th.number {
+                width: 20%;
+                text-align: right;
+            }
+
+            .facture-autres-frais td.nom {
+                font-size: 12px;
+                padding-left: 25px;
+                font-style: italic;
+            }
+
+        .navigation-total {
+            float: right;
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .facture-total-right {
+            text-align: right;
+        }
+
+            .facture-total-right td:nth-child(odd) {
+                padding-right: 80px;
+            }
+
+        .facture-conditions {
+            font-size: 8px;
+        }
+
+        .facture-total-bold {
+            font-weight: bold;
+        }
+
+        .pagebreak {
+            page-break-after: always;
+        }
+    </style>
+</head>
+
+<body class="letter sheet padding-10mm" style="overflow: scroll;">
+
+    <div class="logo"> </div>
+
+    <div class="navigation">
+        <ul class="facture-description">
+            <li>Génie industriel</li>
+            <li>Hygiène industrielle</li>
+            <li>PVA – Amélioration continue</li>
+            <li>Santé-sécurité au travail</li>
+            <li>Gestion d'entretien</li>
+            <li>Formation</li>
+        </ul>
+    </div>
+
+    <div class="facture-title">
+        FACTURE NO. @Model.NoFacture
+    </div>
+
+    <table class="facture-header" style="width:100%; border: 2px;" rules="none">
+        @{
+            DateTimeOffset headerDate = Model.Date ?? DateTimeOffset.Now;
+            DateTime debut = Model.PeriodeDebut ?? DateTime.Now;
+            DateTime fin = Model.PeriodeFin ?? DateTime.Now;
+        }
+
+        <tr>
+            <td class="bold">Date:</td>
+            <td>@headerDate.ToString("dddd dd MMMM yyyy", new CultureInfo("fr-CA")) </td>
+            <td class="bold">Période facturée:</td>
+            <td>@debut.ToString("dddd d MMM yyyy", new CultureInfo("fr-CA")) au @fin.ToString("dddd d MMM yyyy", new CultureInfo("fr-CA")) </td>
+        </tr>
+        <tr>
+            <td class="bold">Client:</td>
+            <td>@Model.Entreprise.Nom</td>
+            <td class="bold">A/S:</td>
+            <td>
+                @{
+                    var contacts = @Model.Sessions.Select(s => s.Contact).Where(c => c != null);
+
+                    var contact = contacts.FirstOrDefault();
+                    var prenom = "";
+                    var nom = "";
+                    if(contact != null)
+                    {
+                        nom = contact.Nom;
+                        prenom = contact.Prenom;
+                    }
+
+                }
+                @prenom @nom
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="bold">
+            Numéro(s) de référence du client:
+                @{ 
+                    if(!String.IsNullOrEmpty(@Model.BonCommande))
+                    {
+                        @Model.BonCommande.Replace(" ", String.Empty).Replace(",", ", ").ToString()
+                    }
+
+                }
+               
+            </td>
+            <td colspan="2"></td>
+        </tr>
+    </table>
+
+    <div class="separator"></div>
+
+    <table width="100%" class="facture-honoraire">
+        <thead>
+            <tr>
+                <th>Honoraires professionnels</th>
+                <th class="number">Quantité</th>
+                <th class="number">Taux</th>
+                <th class="number">Montant</th>
+            </tr>
+        </thead>
+        <tbody>
+
+
+            @{
+                decimal grandTotal = 0.0M;
+                DateTimeOffset prevDate = DateTimeOffset.Now;
+            }
+
+            @foreach (var session in @Model.Sessions.OrderBy(i => i.Date))
+            {
+                DateTimeOffset currDate = session.Date ?? DateTimeOffset.Now;
+                if (currDate.Date != prevDate.Date)
+                {
+                    <tr>
+                        <td class="date">@currDate.ToString("dddd d MMMM", new CultureInfo("fr-CA"))</td>
+                    </tr>
+                }
+
+                int count = 0;
+                StringBuilder listeNom = new StringBuilder("");
+
+                var participantSessions = session.ParticipantSessions.Where(i => i.Participant.Personne != null);
+                participantSessions = participantSessions.GroupBy(x => x.Participant.Personne).Select(x => x.FirstOrDefault());
+                var participantSessionsPresent = participantSessions.Where(i => i.Participant.Personne.Entreprise == Model.Entreprise && i.Participant.AccessoireSeulement == false && i.Participant.Absence == false);
+                var participantSessionsAbsent = participantSessions.Where(i => i.Participant.Personne.Entreprise == Model.Entreprise && i.Participant.AccessoireSeulement == false && i.Participant.Absence == true);
+
+
+                if (participantSessionsPresent.Any())
+                {
+                    foreach (var ps in participantSessionsPresent)
+                    {
+                        listeNom.Append(ps.Participant.Personne.Prenom);
+                        listeNom.Append(" ");
+                        listeNom.Append(ps.Participant.Personne.Nom);
+                        if (count < participantSessionsPresent.Count() - 1)
+                        {
+                            listeNom.Append(", ");
+                        }
+                        count++;
+                    }
+
+                    if (String.Compare(session.TypeFacturation, "Horaire") == 0) //Si pareil
+                    {
+                        double quantity = (session.UtiliseDureeSession) ? session.Duree : session.Formation.Duree;
+                        decimal rate = (session.UtilisePrixSession) ? (decimal)session.Prix : (decimal)session.Formation.TauxHoraire;
+                        decimal total = (decimal)quantity * rate;
+                        grandTotal += total;
+
+                        <tr>
+                            <td>@session.Formation.Titre</td>
+                            <td class="number">@quantity.ToString(CultureInfo.InvariantCulture) heure(s)</td>
+                            <td class="number">@rate.ToString("c", new CultureInfo("fr-CA")) </td>
+                            <td class="number">@total.ToString("c", new CultureInfo("fr-CA")) </td>
+                        </tr>
+
+                        <tr>
+                            <td class="nom">
+                                <span> @listeNom.ToString()</span>
+                            </td>
+                        </tr>
+
+                    }
+                    else if (String.Compare(session.TypeFacturation, "Forfaitaire") == 0) //Si pareil
+                    {
+                        double quantity = 1.0; //Toujours 1 lorsque forfaitaire
+                        decimal rate = (session.UtilisePrixSession) ? (decimal)session.Prix : (decimal)session.Formation.PrixForfaitaire;
+                        decimal total = (decimal)quantity * rate;
+                        grandTotal += total;
+
+                        <tr>
+                            <td>@session.Formation.Titre</td>
+                            <td class="number"></td>
+                            <td class="number">@rate.ToString("c", new CultureInfo("fr-CA")) </td>
+                            <td class="number">@total.ToString("c", new CultureInfo("fr-CA")) </td>
+                        </tr>
+
+                        <tr>
+                            <td class="nom">
+                                <span> @listeNom.ToString()</span>
+                            </td>
+                        </tr>
+
+                    }
+                    else if (String.Compare(session.TypeFacturation, "Unitaire") == 0) //Si pareil
+                    {
+                        double quantity = participantSessionsPresent.Count();
+                        decimal rate = (session.UtilisePrixSession) ? (decimal)session.Prix : (decimal)session.Formation.PrixUnitaire;
+                        decimal total = (decimal)quantity * rate;
+                        grandTotal += total;
+
+                        <tr>
+                            <td>@session.Formation.Titre</td>
+                            <td class="number">@quantity.ToString(CultureInfo.InvariantCulture)</td>
+                            <td class="number">@rate.ToString("c", new CultureInfo("fr-CA")) </td>
+                            <td class="number">@total.ToString("c", new CultureInfo("fr-CA")) </td>
+                        </tr>
+
+                        <tr>
+                            <td class="nom">
+                                <span> @listeNom.ToString()</span>
+                            </td>
+                        </tr>
+
+                    }
+                }
+
+                if (participantSessionsAbsent.Any())
+                {
+                    foreach (var ps in participantSessionsAbsent)
+                    {
+                        listeNom.Append(ps.Participant.Personne.Prenom);
+                        listeNom.Append(" ");
+                        listeNom.Append(ps.Participant.Personne.Nom);
+                        if (count < participantSessionsAbsent.Count() - 1)
+                        {
+                            listeNom.Append(", ");
+                        }
+                        count++;
+                    }
+
+                    if (String.Compare(session.TypeFacturation, "Horaire") == 0 && participantSessions.Count() == participantSessionsAbsent.Count()) //Si pareil
+                    {
+                        double quantity = (session.UtiliseDureeSession) ? session.Duree : session.Formation.Duree;
+                        decimal rate = (session.UtilisePrixSession) ? (decimal)session.Prix : (decimal)session.Formation.TauxHoraire;
+                        decimal total = (decimal)quantity * rate * 0.50M;
+                        grandTotal += total;
+
+                        <tr>
+                            <td>Frais d'absence de 50% pour @session.Formation.Titre</td>
+                            <td class="number">@quantity.ToString(CultureInfo.InvariantCulture) heure(s)</td>
+                            <td class="number">@rate.ToString("c", new CultureInfo("fr-CA")) </td>
+                            <td class="number">@total.ToString("c", new CultureInfo("fr-CA")) </td>
+                        </tr>
+
+                        <tr>
+                            <td class="nom">
+                                <span> @listeNom.ToString()</span>
+                            </td>
+                        </tr>
+
+                    }
+                    else if (String.Compare(session.TypeFacturation, "Forfaitaire") == 0 && participantSessions.Count() == participantSessionsAbsent.Count()) //Si pareil
+                    {
+                        double quantity = 1.0; //Toujours 1 lorsque forfaitaire
+                        decimal rate = (session.UtilisePrixSession) ? (decimal)session.Prix : (decimal)session.Formation.PrixForfaitaire;
+                        decimal total = (decimal)quantity * rate * 0.50M;
+                        grandTotal += total;
+
+                        <tr>
+                            <td>Frais d'absence de 50% pour @session.Formation.Titre</td>
+                            <td class="number"></td>
+                            <td class="number">@rate.ToString("c", new CultureInfo("fr-CA")) </td>
+                            <td class="number">@total.ToString("c", new CultureInfo("fr-CA")) </td>
+                        </tr>
+
+                        <tr>
+                            <td class="nom">
+                                <span> @listeNom.ToString()</span>
+                            </td>
+                        </tr>
+
+                    }
+                    else if (String.Compare(session.TypeFacturation, "Unitaire") == 0) //Si pareil
+                    {
+                        double quantity = participantSessionsPresent.Count();
+                        decimal rate = (session.UtilisePrixSession) ? (decimal)session.Prix : (decimal)session.Formation.PrixUnitaire;
+                        decimal total = (decimal)quantity * rate * 0.50M;
+                        grandTotal += total;
+
+                        <tr>
+                            <td>Frais d'absence de 50% pour @session.Formation.Titre</td>
+                            <td class="number">@quantity.ToString(CultureInfo.InvariantCulture)</td>
+                            <td class="number">@rate.ToString("c", new CultureInfo("fr-CA")) </td>
+                            <td class="number">@total.ToString("c", new CultureInfo("fr-CA")) </td>
+                        </tr>
+
+                        <tr>
+                            <td class="nom">
+                                <span> @listeNom.ToString()</span>
+                            </td>
+                        </tr>
+
+                    }
+                }
+
+                prevDate = session.Date ?? DateTimeOffset.Now;
+            }
+        </tbody>
+    </table>
+
+    <div class="separator"></div>
+
+    <table width="100%" class="facture-autres-frais">
+        <thead>
+            <tr>
+                <th class="title">Autres frais</th>
+                <th class="number">Quantité</th>
+                <th class="number">Coût à l'unité</th>
+                <th class="number">Montant</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @{
+                var allFraisSupplementaires = Model.Sessions.SelectMany(i => i.FraisSupplementaireSessions)
+                .GroupBy(j => j.FraisSupplementaire.Nom)
+                .Select(cl => new
+                {
+                    Nom = cl.First().FraisSupplementaire.Nom,
+                    Rate = cl.First().FraisSupplementaire.CoutUnite,
+                    Quantity = cl.Sum(c => c.Quantite),
+                    Total = cl.Sum(c => c.FraisSupplementaire.CoutUnite) * cl.Sum(c => c.Quantite)
+
+                }).ToList();
+
+                var allParticipantSessions = Model.Sessions.SelectMany(x => x.ParticipantSessions).AsQueryable();
+                var participants = allParticipantSessions.Select(x => x.Participant).AsQueryable();
+                var accessoires = participants.Select(participant => participant.Accessoire).Where(accessoire => accessoire != null)
+                    .GroupBy(accessoire => accessoire.Modele)
+                    .Select(cl => new
+                    {
+                        Modele = cl.First().Modele,
+                        Prix = cl.First().Prix,
+                        Quantity = cl.Count()
+                    }).ToList();
+
+
+            }
+
+            @foreach (var r in allFraisSupplementaires)
+            {
+                double quantity = r.Quantity;
+                decimal rate = (decimal)r.Rate;
+                decimal total = (decimal)r.Total;
+                grandTotal += total;
+
+                <tr>
+                    <td>@r.Nom</td>
+                    <td class="number">@quantity.ToString(CultureInfo.InvariantCulture)</td>
+                    <td class="number">@rate.ToString("c", new CultureInfo("fr-CA"))</td>
+                    <td class="number">@total.ToString("c", new CultureInfo("fr-CA")) </td>
+                </tr>
+            }
+
+            @foreach (var r in accessoires)
+            {
+                double quantity = r.Quantity;
+                decimal rate = (decimal)r.Prix;
+                decimal total = rate * (decimal)quantity;
+                grandTotal += total;
+
+                <tr>
+                    <td>@r.Modele</td>
+                    <td class="number">@quantity.ToString(CultureInfo.InvariantCulture)</td>
+                    <td class="number">@rate.ToString("c", new CultureInfo("fr-CA"))</td>
+                    <td class="number">@total.ToString("c", new CultureInfo("fr-CA")) </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+
+    <div class="separator"></div>
+
+    <div class="navigation-total">
+        <table class="facture-honoraire facture-total-right">
+            <tr>
+                <td class="facture-total-bold">Total avant taxes</td>
+                <td>@grandTotal.ToString("c", new CultureInfo("fr-CA"))</td>
+            </tr>
+            <tr>
+                <td class="facture-total-bold">894858661RT - TPS (5%)</td>
+                <td>@{decimal tps = grandTotal * 0.05M;} @tps.ToString("c", new CultureInfo("fr-CA")) </td>
+            </tr>
+            <tr>
+                <td class="facture-total-bold">1017835277 - TVQ (9.975%)</td>
+                <td>@{decimal tvq = grandTotal * 0.09975M;} @tvq.ToString("c", new CultureInfo("fr-CA")) </td>
+            </tr>
+            <tr>
+                <td>MONTANT À PAYER </td>
+                <td class="facture-total-bold">@{decimal totalAvecTaxe = grandTotal + tps + tvq;} @totalAvecTaxe.ToString("c", new CultureInfo("fr-CA"))</td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="facture-conditions">Conditions: Net 30 jours, 1% d'intérêt par mois après.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="pagebreak"></div>
+
+</body>

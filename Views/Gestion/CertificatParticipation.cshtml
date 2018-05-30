@@ -1,0 +1,209 @@
+@using AppFactu.Models;
+@model CerticatParticipation
+@using System.Text;
+@using System.Globalization;
+
+@{
+    Layout = null;
+}
+<head>
+    <meta charset="utf-8">
+    <style type="text/css">
+
+        body {
+            min-height: 100%;
+        }
+
+        .parent {
+            width: 500px;
+            height: 386px;
+            background-image: url('/images/certificat_participation_fond.png');
+            background-color: #cccccc;
+            background-size: cover;
+            -webkit-print-color-adjust: exact !important;
+        }
+
+        .logo {
+            background-image: url('/images/logo-gcf.png');
+            background-size: cover;
+            width: 45%;
+            height: 28%;
+            margin-left: auto;
+            margin-right: 8%;
+            position: relative;
+            top: 2%;
+            transform: translateY(-50%);
+            z-index: 1;
+            -webkit-print-color-adjust: exact !important;
+        }
+
+        .titre {
+            width: 140px;
+            margin-left: 8%;
+            margin-right: auto;
+            position: relative;
+            top: 25%;
+            transform: translateY(-50%);
+            font-size: 32px;
+            font-family: Garamond;
+            font-weight: bolder;
+            font-style: italic;
+            z-index: 1;
+        }
+
+        .formation {
+            width: 200%;
+            margin-left: 5%;
+            margin-right: 5%;
+            position: relative;
+            top: 115%;
+            transform: translateY(-50%);
+            transform: translateX(-50%);
+            font-size: 18px;
+            font-family: Garamond;
+            font-weight: bold;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .personne {
+            width: 180%;
+            margin-left: 5%;
+            margin-right: 5%;
+            position: relative;
+            top: 125%;
+            transform: translateY(-50%);
+            transform: translateX(-50%);
+            font-size: 16px;
+            font-family: Calibri;
+            font-style: italic;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .date-naissance {
+            width: 180%;
+            margin-left: 5%;
+            margin-right: 5%;
+            position: relative;
+            top: 125%;
+            transform: translateY(-50%);
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-family: Calibri;
+            font-style: italic;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .date {
+            width: 180%;
+            margin-left: 5%;
+            margin-right: 5%;
+            position: relative;
+            top: 135%;
+            transform: translateY(-50%);
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-family: Calibri;
+            font-style: italic;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .formateur {
+            width: 180%;
+            margin-left: 5%;
+            margin-right: 5%;
+            position: relative;
+            top: 145%;
+            transform: translateY(-50%);
+            transform: translateX(-50%);
+            font-size: 30px;
+            font-family: 'Edwardian Script ITC';
+            font-style: italic;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .formateur-desc {
+            width: 180%;
+            margin-left: 5%;
+            margin-right: 5%;
+            position: relative;
+            top: 145%;
+            transform: translateY(-50%);
+            transform: translateX(-50%);
+            font-size: 18px;
+            font-family: Calibri;
+            font-style: italic;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .gcf {
+            width: 180%;
+            margin-left: 5%;
+            margin-right: 5%;
+            position: relative;
+            top: 145%;
+            transform: translateY(-50%);
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-family: Calibri;
+            font-style: italic;
+            z-index: 1;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="parent">
+        <div class="titre">Certificat de<br /> participation</div>
+        <div class="logo" />
+
+        <div id="formation" class="formation">
+            <span>@Model.session.Formation.Titre</span>
+        </div>
+
+        <div id="personne" class="personne">
+            <span>Nous attestons que @Model.personne.Prenom @Model.personne.Nom </span>
+        </div>
+
+        @{
+            DateTimeOffset dateNaissance = @Model.personne.DateNaissance ?? DateTimeOffset.Now;
+            DateTimeOffset date = @Model.session.Date ?? DateTimeOffset.Now;
+
+        }
+
+        <div id="date-naissance" class="date-naissance">
+            <span>(Date naissance @dateNaissance.ToString("dd-MM-yyyy"))</span>
+        </div>
+
+        <div id="date" class="date">
+            <span>a suivi la formation le @date.ToString("d MMMM yyyy", new CultureInfo("fr-CA")).</span>
+        </div>
+
+        <div id="formateur" class="formateur">
+            <span>@Model.session.Formateur.Prenom @Model.session.Formateur.Nom </span>
+        </div>
+
+        <div id="formateur-desc" class="formateur-desc">
+            <span>Formateur</span>
+        </div>
+
+        <div id="gcf" class="gcf">
+            <span>Groupe Conseil Filion No. agrément :  0056425</span>
+        </div>
+
+    </div>
+</body>
+
+<script>
+    $('#formation').textfill({});
+    $('#personne').textfill({});
+</script>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery-textfill/dist/jquery.textfill.js"></script>

@@ -1,0 +1,89 @@
+@using AppFactu.Models;
+@model CerticatParticipation
+@using System.Text;
+@using System.Globalization;
+
+@{
+    Layout = null;
+}
+<head>
+    <meta charset="utf-8">
+    <style type="text/css">
+
+        .parent {
+            width: 400px;
+            height: 244px;
+            background-image: url('/images/certificat_participation_fond.png');
+            background-color: #cccccc;
+            background-size: cover;
+            z-index: 0;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .logo {
+            background-image: url('/images/logo-gcf.png');
+            background-size: cover;
+            width: 150px;
+            height: 75px;
+            margin-left: 8%;
+            margin-right: auto;
+            position: relative;
+            transform: translateY(-50%);
+            z-index: 2;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .titre {
+            width: 140px;
+            margin-left: auto;
+            margin-right: 8%;
+            position: relative;
+            top: 20%;
+            transform: translateY(-50%);
+            font-size: 22px;
+            font-family: Garamond;
+            font-weight: bolder;
+            font-style: italic;
+            z-index: 2;
+        }
+
+        .content {
+            margin-left: 5%;
+            margin-right: auto;
+            position: relative;
+            top: 30px;
+            transform: translateY(-50%);
+            font-size: 13px;
+            font-family: Arial;
+            z-index: 2;
+            line-height: 25px;
+        }
+    </style>
+</head>
+
+@{
+    DateTimeOffset dateNaissance = @Model.personne.DateNaissance ?? DateTimeOffset.Now;
+    DateTimeOffset date = @Model.session.Date ?? DateTimeOffset.Now;
+
+}
+
+<body>
+    <div class="parent">
+        <div class="titre">Carte de<br />participation</div>
+        <div class="logo"></div>
+        <div class="content">
+            <div class="nom">Nom: @Model.personne.Prenom @Model.personne.Nom</div>
+            <div class="entreprise">Entreprise: @Model.personne.Entreprise.Nom</div>
+            <div class="formation">Formation: @Model.session.Formation.Titre </div>
+            <div class="date">Date: @date.ToString("d MMMM yyyy", new CultureInfo("fr-CA")) </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    $('#formation').textfill({});
+    $('#personne').textfill({});
+</script>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery-textfill/dist/jquery.textfill.js"></script>
